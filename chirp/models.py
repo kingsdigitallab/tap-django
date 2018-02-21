@@ -10,8 +10,15 @@ from bson.code import Code
 from . import aggregations
 
 
+class User(AbstractUser):
+    pass
+
+
 class AggregationFramework(PolymorphicModel):
     label = models.CharField(max_length=64, unique=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.label
@@ -45,10 +52,6 @@ class MapReduce(AggregationFramework):
             query=self.query)
 
         return list(result.find())
-
-
-class User(AbstractUser):
-    pass
 
 
 class Filter(models.Model):

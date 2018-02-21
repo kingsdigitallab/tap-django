@@ -1,10 +1,10 @@
 from bson.code import Code
 
 sentiment_avg = [{
-    "$group": {
-        "_id": "null",
-        "sentiment_avg": {
-            "$avg": "$chirp.sentiment.polarity"
+    '$group': {
+        '_id': 'null',
+        'sentiment_avg': {
+            '$avg': '$chirp.sentiment.polarity'
         }
     }
 }]
@@ -24,9 +24,9 @@ sentiment_count_mr = {
         }
     '''),
     'reducer': Code('''
-        function(key, values) {
-            return Array.sum(values);
-        }
+function(key, values) {
+    return Array.sum(values);
+}
     ''')
 }
 
@@ -41,7 +41,7 @@ sentiment_country_mr = {
             return Array.avg(values);
         }
     '''),
-    'query': {"place.country_code": {"$exists": True}}
+    'query': {'place.country_code': {'$exists': True}}
 }
 
 sentiment_date_mr = {
@@ -85,5 +85,5 @@ tweets_total_country_mr = {
             return Array.sum(values);
         }
     '''),
-    'query': {'place.country_code': {'$exists': True}}
+    'query': {"place.country_code": {"$exists": True}}
 }
