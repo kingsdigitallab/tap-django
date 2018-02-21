@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block main %}
+<section class="section">
+  <div class="container">
+    <h1 class="title">{{ object.label }}</h1>
+    <h2 class="subtitle">
+      The filter is {% if not object.active %}not{% endif %} active,
+      has {{ object.number_of_tweets }} tweets,
+      average {{ object.sentiment }} sentiment
+    </h2>
+
+    <div class="columns">
+      <div class="column is-half">
+        <p class="title">Sentiment</p>
+        <div id="sentiment_count"></div>
+      </div>
+      <div class="column is-half">
+        <p class="title">Sentiment by Country</p>
+        <div id="sentiment_by_country"></div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block footer_scripts %}
+<script src="https://d3plus.org/js/d3plus.v2.0.0-alpha.16.full.min.js"></script>
+<script>
+new d3plus.Pie()
+.data({{ object.get_sentiment_count | safe }}, function(data) {
+  for(var i = 0; i < data.length; i++){
+    data[i].id = data[i]['_id'];
+    delete data[i]._id;
+  }
+  return data;
+})
+.height(500)
+.select("#sentiment_count")
+.render();
+</script>
+<script>
+new d3plus.BarChart()
+.data({{ object.get_sentiment_by_country | safe }}, function(data) {
+  for(var i = 0; i < data.length; i++){
+    data[i].id = data[i]['_id'];
+    data[i].y = data[i]['value'];
+    data[i].x = i;
+
+    delete data[i]._id;
+    delete data[i].value;
+  }
+  return data;
+})
+.height(500)
+.select("#sentiment_by_country")
+.render();
+</script>
+{% endblock %}

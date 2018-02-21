@@ -1,0 +1,12 @@
+{
+    "name": "tap",
+    "version": "0.1",
+    "dependencies": {
+        "jquery": null,
+        "bulma": null,
+        "font-awesome": null,
+        "vue": null
+    },
+    "main": "assets/js/main.js",
+    "ignore": ["**/.*", "node_modules", "bower_components", "test", "tests"]
+}

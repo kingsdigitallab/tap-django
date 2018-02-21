@@ -1,0 +1,49 @@
+{% load staticfiles compress  %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>{% block meta_title %}{% endblock %} | Twitter Analytics Platform</title>
+  <meta name="author" content="King's Digital Lab">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="{% static 'vendor/font-awesome/web-fonts-with-css/css/font-awesome.min.css' %}">
+  {% compress css %}
+  <link rel="stylesheet" type="text/x-scss" href="{% static 'scss/main.scss' %}">
+  {% endcompress %}
+</head>
+<body>
+  <nav>
+    {% include 'includes/navigation.html' %}
+  </nav>
+
+  <main>
+    {% block title %}{% endblock %}
+    {% block main %}
+    {% endblock %}
+  </main>
+
+  <footer class="footer is-dark">
+    {% block footer %}
+    {% include 'includes/footer.html' %}
+    {% endblock %}
+  </footer>
+
+  {% compress js %}
+  <script src="{% static 'vendor/jquery/dist/jquery.min.js' %}"></script>
+  <script src="{% static 'js/main.js' %}"></script>
+  {% endcompress %}
+
+  {% block footer_scripts %}{% endblock %}
+
+  {% compress js %}
+  <script src="{% static 'js/google_analytics.js' %}"></script>
+  <script>
+  ga('create', '{{ GA_ID }}', 'auto');
+  ga('send', 'pageview');
+  </script>
+  {% endcompress %}
+</body>
+</html>
