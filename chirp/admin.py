@@ -19,6 +19,7 @@ class MapReduceAdmin(admin.ModelAdmin):
 @admin.register(Filter)
 class FilterAdmin(admin.ModelAdmin):
     exclude = ['user']
+    filter_horizontal = ['aggregations']
     list_display = ['label', 'active', 'follow', 'track', 'locations',
                     'number_of_tweets', 'sentiment_avg', 'uid', 'user',
                     'modified']
