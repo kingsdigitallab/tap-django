@@ -88,16 +88,16 @@ class Filter(models.Model):
         return '{}_{}_{}'.format(
             self._meta.app_label, self.__class__.__name__, self.id).lower()
 
+    @property
+    def number_of_tweets(self):
+        collection = self.get_mongo_collection()
+        return collection.count()
+
     def get_mongo_collection(self):
         client = MongoClient(s.MONGO_DB_URI)
         db = client[s.MONGO_DB_NAME]
         collection = db[self.uid]
         return collection
-
-    @property
-    def number_of_tweets(self):
-        collection = self.get_mongo_collection()
-        return collection.count()
 
     @property
     def sentiment(self):
@@ -117,41 +117,5 @@ class Filter(models.Model):
 
         return r[0]['sentiment_avg']
 
-    def get_sentiment_count(self):
-        collection = self.get_mongo_collection()
-        options = aggregations.sentiment_count_mr
-
-        r = collection.map_reduce(
-            options['mapper'], options['reducer'],
-            '{}_sentiment_count'.format(self.uid))
-
-        return list(r.find())
-
-    def get_sentiment_by_country(self):
-        collection = self.get_mongo_collection()
-        options = aggregations.sentiment_country_mr
-
-        r = collection.map_reduce(
-            options['mapper'], options['reducer'],
-            '{}_sentiment_country'.format(self.uid), query=options['query'])
-
-        return list(r.find())
-
-    def get_sentiment_by_date(self):
-        collection = self.get_mongo_collection()
-        options = aggregations.sentiment_date_mr
-
-        r = collection.map_reduce(
-            options['mapper'], options['reducer'],
-            '{}_sentiment_date'.format(self.uid), query=options['query'])
-
-        return list(r.find())
-
-    def get_tweets_total_by_country(self):
-        collection = self.get_mongo_collection()
-        options = aggregations.tweets_total_country_mr
-
-        r = collection.map_reduce(
-            options['mapper'], options['reducer'],
-            '{}_tweets_total_country'.format(self.uid), query=options['query'])
-        return list(r.find())
+    def get_aggregations(self):
+        return self.aggregations.all()
