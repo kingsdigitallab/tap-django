@@ -8,12 +8,14 @@ from .twitter import harvest
 
 @admin.register(Aggregation)
 class AggregationAdmin(admin.ModelAdmin):
-    list_display = ['label']
+    exclude = ['user']
+    list_display = ['label', 'user', 'modified']
 
 
 @admin.register(MapReduce)
 class MapReduceAdmin(admin.ModelAdmin):
-    list_display = ['label']
+    exclude = ['user']
+    list_display = ['label', 'user', 'modified']
 
 
 @admin.register(Filter)
