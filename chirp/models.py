@@ -1,11 +1,13 @@
+from bson.code import Code
 from django.conf import settings as s
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 from django.utils.text import slugify
 from jsonfield import JSONField
 from polymorphic.models import PolymorphicModel
 from pymongo import MongoClient
-from bson.code import Code
 
 from . import aggregations
 
@@ -15,13 +17,19 @@ class User(AbstractUser):
 
 
 class AggregationFramework(PolymorphicModel):
-    label = models.CharField(max_length=64, unique=True)
+    title = models.CharField(max_length=64, unique=True)
+    slug = models.CharField(max_length=128)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.label
+        return self.title
+
+
+@receiver(pre_save, sender=AggregationFramework)
+def aggregation_pre_save(sender, instance, *args, **kwargs):
+    instance.slug = slugify(instance.title)
 
 
 class Aggregation(AggregationFramework):
@@ -48,7 +56,7 @@ class MapReduce(AggregationFramework):
 
         result = collection.map_reduce(
             Code(self.mapper), Code(self.reducer),
-            '{}_{}'.format(f.uid, slugify(self.label)),
+            '{}_{}'.format(f.uid, slugify(self.title)),
             query=self.query)
 
         return list(result.find())
@@ -56,7 +64,7 @@ class MapReduce(AggregationFramework):
 
 class Filter(models.Model):
     active = models.BooleanField(help_text='Set active to harvest tweets.')
-    label = models.CharField(max_length=64, unique=True)
+    title = models.CharField(max_length=64, unique=True)
     follow = models.CharField(
         max_length=64, blank=True, null=True,
         help_text=('A comma separated list of user IDs, indicating the users '
@@ -81,7 +89,7 @@ class Filter(models.Model):
     modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.label
+        return self.title
 
     @property
     def uid(self):

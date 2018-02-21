@@ -3,22 +3,20 @@
 {% block main %}
 <section class="section">
   <div class="container">
-    <h1 class="title">{{ object.label }}</h1>
+    <h1 class="title">{{ object.title }}</h1>
     <h2 class="subtitle">
       The filter is {% if not object.active %}not{% endif %} active,
       has {{ object.number_of_tweets }} tweets,
       average {{ object.sentiment }} sentiment
     </h2>
 
-    <div class="columns">
+    <div class="columns is-multiline">
+      {% for a in object.get_aggregations %}
       <div class="column is-half">
-        <p class="title">Sentiment</p>
-        <div id="sentiment_count"></div>
+        <p class="title">{{ a.title }}</p>
+        <div id="{{ a.slug }}"></div>
       </div>
-      <div class="column is-half">
-        <p class="title">Sentiment by Country</p>
-        <div id="sentiment_by_country"></div>
-      </div>
+      {% endfor %}
     </div>
   </div>
 </section>

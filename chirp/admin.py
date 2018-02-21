@@ -9,20 +9,20 @@ from .twitter import harvest
 @admin.register(Aggregation)
 class AggregationAdmin(admin.ModelAdmin):
     exclude = ['user']
-    list_display = ['label', 'user', 'modified']
+    list_display = ['title', 'user', 'modified']
 
 
 @admin.register(MapReduce)
 class MapReduceAdmin(admin.ModelAdmin):
     exclude = ['user']
-    list_display = ['label', 'user', 'modified']
+    list_display = ['title', 'user', 'modified']
 
 
 @admin.register(Filter)
 class FilterAdmin(admin.ModelAdmin):
     exclude = ['user']
     filter_horizontal = ['aggregations']
-    list_display = ['label', 'active', 'follow', 'track', 'locations',
+    list_display = ['title', 'active', 'follow', 'track', 'locations',
                     'number_of_tweets', 'sentiment_avg', 'uid', 'user',
                     'modified']
 
