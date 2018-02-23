@@ -1,20 +1,33 @@
 from apscheduler.jobstores.base import JobLookupError
+from django import forms
 from django.contrib import admin
 
 from .apscheduler import scheduler
+from .fields import JavaScriptWidget
 from .models import Aggregation, Filter, MapReduce
 from .twitter import harvest
+
+
+class AggregationFrameworkForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(AggregationFrameworkForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            if field.endswith('_js'):
+                self.fields[field].widget = JavaScriptWidget(
+                    attrs={'class': 'js'})
 
 
 @admin.register(Aggregation)
 class AggregationAdmin(admin.ModelAdmin):
     exclude = ['user']
+    form = AggregationFrameworkForm
     list_display = ['title', 'user', 'modified']
 
 
 @admin.register(MapReduce)
 class MapReduceAdmin(admin.ModelAdmin):
     exclude = ['user']
+    form = AggregationFrameworkForm
     list_display = ['title', 'user', 'modified']
 
 

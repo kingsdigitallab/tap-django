@@ -2,14 +2,13 @@ from bson.code import Code
 from django.conf import settings as s
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
 from django.utils.text import slugify
 from jsonfield import JSONField
 from polymorphic.models import PolymorphicModel
 from pymongo import MongoClient
 
 from . import aggregations
+from .fields import JavaScriptField
 
 
 class User(AbstractUser):
@@ -26,26 +25,25 @@ class AggregationFramework(PolymorphicModel):
     def __str__(self):
         return self.title
 
-
-@receiver(pre_save, sender=AggregationFramework)
-def aggregation_pre_save(sender, instance, *args, **kwargs):
-    instance.slug = slugify(instance.title)
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
 
 
 class Aggregation(AggregationFramework):
-    pipeline = JSONField()
+    pipeline_js = JSONField()
 
     def perform(self, f):
         collection = f.get_mongo_collection()
-        result = collection.aggregate(self.pipeline)
+        result = collection.aggregate(self.pipeline_js)
 
         return list(result)
 
 
 class MapReduce(AggregationFramework):
-    mapper = models.TextField(help_text='Enter valid JavaScript')
-    reducer = models.TextField(help_text='Enter valid JavaScript')
-    query = JSONField(blank=True, null=True)
+    mapper_js = JavaScriptField(blank=True, null=True)
+    reducer_js = JavaScriptField(blank=True, null=True)
+    query_js = JSONField(blank=True, null=True)
 
     class Meta:
         verbose_name = 'Map/Reduce'
@@ -55,9 +53,9 @@ class MapReduce(AggregationFramework):
         collection = f.get_mongo_collection()
 
         result = collection.map_reduce(
-            Code(self.mapper), Code(self.reducer),
+            Code(self.mapper_js), Code(self.reducer_js),
             '{}_{}'.format(f.uid, slugify(self.title)),
-            query=self.query)
+            query=self.query_js)
 
         return list(result.find())
 

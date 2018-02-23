@@ -14,7 +14,7 @@
       {% for a in object.get_aggregations %}
       <div class="column is-half">
         <p class="title">{{ a.title }}</p>
-        <div id="{{ a.slug }}"></div>
+        <canvas id="{{ a.slug }}"></canvas>
       </div>
       {% endfor %}
     </div>
@@ -23,35 +23,87 @@
 {% endblock %}
 
 {% block footer_scripts %}
-<script src="https://d3plus.org/js/d3plus.v2.0.0-alpha.16.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 <script>
-new d3plus.Pie()
-.data({{ object.get_sentiment_count | safe }}, function(data) {
-  for(var i = 0; i < data.length; i++){
-    data[i].id = data[i]['_id'];
-    delete data[i]._id;
-  }
-  return data;
-})
-.height(500)
-.select("#sentiment_count")
-.render();
-</script>
-<script>
-new d3plus.BarChart()
-.data({{ object.get_sentiment_by_country | safe }}, function(data) {
-  for(var i = 0; i < data.length; i++){
-    data[i].id = data[i]['_id'];
-    data[i].y = data[i]['value'];
-    data[i].x = i;
+$(function() {
+  var colours = ['#9e0142', '#d53e4f', '#f46d43', '#fdae61', '#fee08b', '#ffffbf', '#e6f598', '#abdda4', '#66c2a5', '#3288bd', '#5e4fa2'];
 
-    delete data[i]._id;
-    delete data[i].value;
-  }
-  return data;
-})
-.height(500)
-.select("#sentiment_by_country")
-.render();
+  {% for a in object.get_aggregations %}
+  $.getJSON('{% url "perform-aggregation" object.id a.id %}', function(data) {
+    var ctx = $('#{{ a.slug }}');
+    var charType = 'bar';
+    var labels = [];
+    var datasetsObj = {};
+    var values = [];
+    var datasets = [];
+    var scales = {};
+
+    if (data.length > 1 && data.length < 4) {
+      charType = 'doughnut';
+    }
+
+    for (var i = 0; i < data.length; i++) {
+      data[i].id = data[i]._id;
+
+      var el = data[i].id;
+      if (el.id) {
+        labels.push(el.value);
+
+        if (!(el.id in datasetsObj)) {
+          datasetsObj[el.id] = {};
+          datasetsObj[el.id].label = el.id;
+          datasetsObj[el.id].backgroundColor = colours[Object.keys(datasetsObj).length - 1];
+          datasetsObj[el.id].data = [];
+        }
+        datasetsObj[el.id].data.push(data[i].value);
+      } else {
+        labels.push(data[i].id);
+        values.push(data[i].value);
+      }
+
+      delete data[i]._id;
+    }
+
+    if ($.isEmptyObject(datasetsObj)) {
+      datasets = [{
+        label: '{{ a.title }}',
+        backgroundColor: colours,
+        borderColor: colours,
+        data: values,
+      }];
+    } else {
+      labels = Array.from(new Set(labels));
+
+      for (var key in datasetsObj) {
+        datasets.push(datasetsObj[key]);
+      }
+
+      scales = {
+        xAxes: [{
+          stacked: true,
+        }],
+        yAxes: [{
+          stacked: true
+        }]
+      };
+    }
+
+    var chart{{ a.id }} = new Chart(ctx, {
+      type: charType,
+      data: {
+        labels: labels,
+        datasets: datasets
+      },
+      options: {
+        responsive: true,
+        scales: scales
+      }
+    });
+  })
+  .fail(function() {
+    alert( "error" );
+  });
+  {% endfor %}
+});
 </script>
 {% endblock %}
