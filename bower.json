@@ -4,8 +4,8 @@
     "dependencies": {
         "jquery": null,
         "bulma": null,
-        "font-awesome": null,
-        "vue": null
+        "codemirror": null,
+        "font-awesome": null
     },
     "main": "assets/js/main.js",
     "ignore": ["**/.*", "node_modules", "bower_components", "test", "tests"]
