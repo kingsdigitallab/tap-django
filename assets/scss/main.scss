@@ -1,1 +1,20 @@
 @import '../vendor/bulma/bulma.sass';
+
+.wordcloud {
+    display: inline-block;
+    height: 100vh;
+    overflow: hidden;
+    width: 100%;
+
+    span {
+        transition: text-shadow 1s ease, opacity 1s ease;
+        -webkit-transition: text-shadow 1s ease, opacity 1s ease;
+        -ms-transition: text-shadow 1s ease, opacity 1s ease;
+    }
+
+    span:hover {
+        cursor: pointer;
+        opacity: 0.5;
+        text-shadow: 0 0 10px, 0 0 10px #fff, 0 0 10px #fff, 0 0 10px #fff;
+    }
+}
