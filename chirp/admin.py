@@ -1,10 +1,14 @@
 from apscheduler.jobstores.base import JobLookupError
 from django import forms
 from django.contrib import admin
+from django.utils.text import slugify
+from polymorphic.admin import (PolymorphicChildModelAdmin,
+                               PolymorphicChildModelFilter,
+                               PolymorphicParentModelAdmin)
 
 from .apscheduler import scheduler
 from .fields import JavaScriptWidget
-from .models import Aggregation, Filter, MapReduce
+from .models import Aggregation, AggregationFramework, Filter, MapReduce
 from .twitter import harvest
 
 
@@ -17,18 +21,32 @@ class AggregationFrameworkForm(forms.ModelForm):
                     attrs={'class': 'js'})
 
 
-@admin.register(Aggregation)
-class AggregationAdmin(admin.ModelAdmin):
-    exclude = ['user']
-    form = AggregationFrameworkForm
+class AggregationFrameworkChildAdmin(PolymorphicChildModelAdmin):
+    base_form = AggregationFrameworkForm
+    exclude = ['slug', 'user']
     list_display = ['title', 'user', 'modified']
+
+    def save_model(self, request, obj, form, change):
+        obj.slug = slugify(obj.title)
+        obj.user = request.user
+        super().save_model(request, obj, form, change)
+
+
+@admin.register(Aggregation)
+class AggregationAdmin(AggregationFrameworkChildAdmin):
+    base_model = Aggregation
 
 
 @admin.register(MapReduce)
-class MapReduceAdmin(admin.ModelAdmin):
-    exclude = ['user']
-    form = AggregationFrameworkForm
-    list_display = ['title', 'user', 'modified']
+class MapReduceAdmin(AggregationFrameworkChildAdmin):
+    base_model = MapReduce
+
+
+@admin.register(AggregationFramework)
+class AggregationFrameworkAdmin(PolymorphicParentModelAdmin):
+    base_model = AggregationFramework
+    child_models = [Aggregation, MapReduce]
+    list_filter = [PolymorphicChildModelFilter]
 
 
 @admin.register(Filter)
