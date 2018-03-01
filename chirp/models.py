@@ -5,7 +5,7 @@ from django.db import models
 from django.utils.text import slugify
 from jsonfield import JSONField
 from polymorphic.models import PolymorphicModel
-from pymongo import MongoClient
+from pymongo import DESCENDING, MongoClient
 
 from . import aggregations
 from .fields import JavaScriptField
@@ -22,16 +22,25 @@ class AggregationFramework(PolymorphicModel):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        ordering = ['title']
+        verbose_name = 'Aggregation'
+        verbose_name_plural = 'Aggregations'
+
     def __str__(self):
         return self.title
 
     def save(self, *args, **kwargs):
+        print('models', self.user)
         self.slug = slugify(self.title)
         super().save(*args, **kwargs)
 
 
 class Aggregation(AggregationFramework):
     pipeline_js = JSONField()
+
+    class Meta:
+        verbose_name = 'Aggregation'
 
     def perform(self, f):
         collection = f.get_mongo_collection()
@@ -86,6 +95,8 @@ class Filter(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
+    active_query = None
+
     def __str__(self):
         return self.title
 
@@ -121,7 +132,37 @@ class Filter(models.Model):
         collection = self.get_mongo_collection()
         r = list(collection.aggregate(aggregations.sentiment_avg))
 
-        return r[0]['sentiment_avg']
+        if r:
+            return r[0]['sentiment_avg']
+
+        return 0
 
     def get_aggregations(self):
-        return self.aggregations.all()
+        return self.aggregations.all().order_by('title')
+
+    def get_tweets(self, query=None, page=1):
+        collection = self.get_mongo_collection()
+        cursor = collection.find(
+            filter=query, limit=10, sort=[('created_at', DESCENDING)])
+
+        return cursor
+
+    def get_words(self):
+        collection = self.get_mongo_collection()
+        mapper_js = Code("""function() {
+            for (var w in this.chirp.words) {
+                emit(this.chirp.words[w], 1);
+            }
+        }""")
+        reducer_js = Code("""function(key, values) {
+            return Array.sum(values);
+        }""")
+        result = collection.map_reduce(
+            mapper_js, reducer_js,
+            '{}_{}'.format(self.uid, slugify(self.title)))
+        total_words = result.count()
+
+        words = [[item['_id'], item['value']]
+                 for item in list(result.find())
+                 if item['value'] / total_words > 0.025]
+        return words
