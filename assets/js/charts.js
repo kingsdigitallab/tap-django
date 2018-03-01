@@ -1,21 +1,12 @@
-function chart(dataUrl, chartElement, chartTitle, chartId) {
-  var colours = [
-    '#9e0142',
-    '#d53e4f',
-    '#f46d43',
-    '#fdae61',
-    '#fee08b',
-    '#ffffbf',
-    '#e6f598',
-    '#abdda4',
-    '#66c2a5',
-    '#3288bd',
-    '#5e4fa2'
-  ]
+var colourSchemes = ['tol-dv', 'tol-sq', 'tol-rainbow']
 
+var chart = function(dataUrl, chartElement, chartTitle, chartId) {
   $.getJSON(dataUrl, function(data) {
     var ctx = $(chartElement)
+    var colours = chartJsColours(palette(colourSchemes, data.length, 0))
+
     var charType = 'bar'
+
     var labels = []
     var datasetsObj = {}
     var values = []
@@ -59,6 +50,7 @@ function chart(dataUrl, chartElement, chartTitle, chartId) {
         }
       ]
     } else {
+      charType = 'bar'
       labels = Array.from(new Set(labels))
 
       for (var key in datasetsObj) {
@@ -92,5 +84,39 @@ function chart(dataUrl, chartElement, chartTitle, chartId) {
     })
   }).fail(function() {
     alert('error')
+  })
+}
+
+var chartJsColours = function(colors) {
+  return colors.map(function(color) {
+    return '#' + color
+  })
+}
+
+var wordcloud = function(dataUrl, chartElementId) {
+  var $el = $('#' + chartElementId)
+  var width = $el.parent().width()
+  var viewportHeight = window.innerHeight
+  var height = width < viewportHeight ? width : viewportHeight
+
+  $.getJSON(dataUrl, function(data) {
+    WordCloud(chartElementId, {
+      list: data,
+      backgroundColor: '#f0f0f0',
+      color: 'random-dark',
+      gridSize: 8,
+      weightFactor: 0.1,
+      width: width
+    })
+  }).fail(function() {
+    alert('error')
+  })
+
+  $el.on('wordcloudstop', function wordcloudstopped(evt) {
+    $('#wordcloud span').click(function() {
+      location.href =
+        '?query-field=chirp.words&query-value=' +
+        encodeURIComponent(this.textContent)
+    })
   })
 }
