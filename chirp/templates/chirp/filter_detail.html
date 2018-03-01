@@ -4,20 +4,45 @@
 {% block main %}
 <section class="section">
   <div class="container">
-    <h1 class="title">{{ object.title }}</h1>
+    <h1 class="title">
+      <a href="{% url 'filter-detail' object.id %}">{{ object.title }}</a>
+    </h1>
     <h2 class="subtitle">
       The filter is {% if not object.active %}not{% endif %} active,
       has {{ object.number_of_tweets }} tweets,
       average {{ object.sentiment }} sentiment
+      {% if query %}
+      | filtered by: {{ query }}
+      {% endif %}
     </h2>
 
     <div class="columns is-multiline">
-      {% for a in object.get_aggregations %}
-      <div class="column is-half">
-        <p class="title">{{ a.title }}</p>
-        <canvas id="{{ a.slug }}"></canvas>
+      <div class="column is-three-quarters">
+        {% for a in object.get_aggregations %}
+        <div class="chart">
+          <p class="title">{{ a.title }}</p>
+          <canvas id="{{ a.slug }}"></canvas>
+        </div>
+        {% endfor %}
       </div>
-      {% endfor %}
+      <div class="column is-one-quarter">
+        <p class="title">Tweets ({{ tweets.count }})</p>
+        <ul class="tweets">
+          <li>
+            {% for tweet in tweets %}
+            {% include 'chirp/includes/tweet.html' %}
+            {% endfor %}
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="columns is-multiline">
+      <div class="column">
+        <div class="chart">
+          <p class="title">Words</p>
+          <div class="wordcloud" id="wordcloud"></div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -25,13 +50,16 @@
 
 {% block footer_scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+<script src="https://google.github.io/palette.js/palette.js"></script>
+<script src="{% static '/vendor/wordcloud2.js/src/wordcloud2.js' %}"></script>
 <script src="{% static '/js/charts.js' %}"></script>
 <script>
 $(function() {
   {% for a in object.get_aggregations %}
   chart('{% url "perform-aggregation" object.id a.id %}', '#{{ a.slug }}', '{{ a.title }}', {{ a.id }});
   {% endfor %}
-  d
+
+  wordcloud('{% url "get-words" object.id %}', 'wordcloud');
 });
 </script>
 {% endblock %}
