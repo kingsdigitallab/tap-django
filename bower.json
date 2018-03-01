@@ -5,7 +5,8 @@
         "jquery": null,
         "bulma": null,
         "codemirror": null,
-        "font-awesome": null
+        "font-awesome": null,
+        "wordcloud2.js": null
     },
     "main": "assets/js/main.js",
     "ignore": ["**/.*", "node_modules", "bower_components", "test", "tests"]
