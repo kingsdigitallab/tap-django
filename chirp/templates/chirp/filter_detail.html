@@ -11,8 +11,13 @@
       The filter is {% if not object.active %}not{% endif %} active,
       has {{ object.number_of_tweets }} tweets,
       average {{ object.sentiment }} sentiment
+      <br />
+      Results filtered by:
       {% if query %}
-      | filtered by: {{ query }}
+      <span class="tag is-medium">
+        {{ query }}
+        <a class="delete is-small" href="{% url 'filter-detail' object.id %}"></a>
+      </span>
       {% endif %}
     </h2>
 
@@ -56,10 +61,10 @@
 <script>
 $(function() {
   {% for a in object.get_aggregations %}
-  chart('{% url "perform-aggregation" object.id a.id %}', '#{{ a.slug }}', '{{ a.title }}', {{ a.id }});
+  chart('{% url "perform-aggregation" object.id a.id %}' + window.location.search, '#{{ a.slug }}', '{{ a.title }}', {{ a.id }}, {% if a.query_field %}'{{ a.query_field }}'{% else %}undefined{% endif %});
   {% endfor %}
 
-  wordcloud('{% url "get-words" object.id %}', 'wordcloud');
+  wordcloud('{% url "get-words" object.id %}' + window.location.search, 'wordcloud');
 });
 </script>
 {% endblock %}
