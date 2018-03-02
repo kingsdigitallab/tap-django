@@ -1,6 +1,7 @@
 from bson.code import Code
 from django.conf import settings as s
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.text import slugify
 from jsonfield import JSONField
@@ -109,7 +110,8 @@ class Filter(models.Model):
 
     sentiment_threshold = models.DecimalField(
         max_digits=2, decimal_places=1, default=0.0,
-        help_text=('Minimum value used to label tweets '
+        validators=[MaxValueValidator(1.0), MinValueValidator(-1.0)],
+        help_text=('Minimum value (-1.0 to 1.0) used to label tweets '
                    'with positive/negative sentiment.'))
 
     aggregations = models.ManyToManyField(
