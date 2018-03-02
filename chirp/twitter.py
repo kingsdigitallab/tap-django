@@ -32,7 +32,7 @@ def _process_tweets(f, collection):
 
         t['chirp'] = {}
 
-        t = _add_npl_to_tweet(t)
+        t = _add_npl_to_tweet(t, f.sentiment_threshold)
 
         if not collection.find_one({'id_str': t['id_str']}):
             collection.insert(t)
@@ -66,23 +66,35 @@ def tweet_generator(follow='', track='', locations=''):
                 logger.error(e.args)
 
 
-def _add_npl_to_tweet(tweet):
+def _add_npl_to_tweet(tweet, sentiment_threshold):
+    tweet = add_sentiment_to_tweet(tweet, sentiment_threshold)
+    tweet = add_words_to_tweet(tweet)
+
+    return tweet
+
+
+def add_sentiment_to_tweet(tweet, sentiment_threshold):
     text = get_text_from_tweet(tweet)
 
     if not text:
         return tweet
 
-    sentiment = get_sentiment_from_tweet_text(text)
+    sentiment = _get_sentiment_from_tweet_text(text)
 
     if sentiment:
+        polarity = sentiment.polarity
+
         tweet['chirp']['sentiment'] = {}
-        tweet['chirp']['sentiment']['polarity'] = sentiment.polarity
+        tweet['chirp']['sentiment']['polarity'] = polarity
         tweet['chirp']['sentiment']['subjectivity'] = sentiment.subjectivity
 
-    words = get_words_from_tweet_text(text)
+        label = 'neutral'
+        if polarity > sentiment_threshold:
+            label = 'positive'
+        elif polarity < sentiment_threshold:
+            label = 'negative'
 
-    if words:
-        tweet['chirp']['words'] = words
+        tweet['chirp']['sentiment']['label'] = label
 
     return tweet
 
@@ -102,12 +114,26 @@ def get_text_from_tweet(tweet):
     return text
 
 
-def get_sentiment_from_tweet_text(text):
+def _get_sentiment_from_tweet_text(text):
     textblob = TextBlob(text)
     return textblob.sentiment
 
 
-def get_words_from_tweet_text(text):
+def add_words_to_tweet(tweet):
+    text = get_text_from_tweet(tweet)
+
+    if not text:
+        return tweet
+
+    words = _get_words_from_tweet_text(text)
+
+    if words:
+        tweet['chirp']['words'] = words
+
+    return tweet
+
+
+def _get_words_from_tweet_text(text):
     tokens = _tokenize(text)
 
     words = [

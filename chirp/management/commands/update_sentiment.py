@@ -1,10 +1,10 @@
 from chirp.models import Filter
-from chirp.twitter import add_words_to_tweet
+from chirp.twitter import add_sentiment_to_tweet
 from django.core.management.base import BaseCommand, CommandError
 
 
 class Command(BaseCommand):
-    help = 'Updates the words field for tweets from the given Filter'
+    help = 'Updates the sentiment field for tweets from the given Filter'
 
     def add_arguments(self, parser):
         parser.add_argument('filter_id', nargs='+', type=int)
@@ -20,27 +20,27 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(
                 'Updating documents from filter {}...'.format(f.title)))
 
-            count = self._update_words(f)
+            count = self._update_sentiment(f)
 
             self.stdout.write(self.style.SUCCESS(
                 'Updated {} documents'.format(count)))
 
-    def _update_words(self, f):
+    def _update_sentiment(self, f):
         count = 0
         collection = f.get_mongo_collection()
         cursor = collection.find()
 
         for tweet in cursor:
-            tweet = add_words_to_tweet(tweet)
+            tweet = add_sentiment_to_tweet(tweet, f.sentiment_threshold)
 
             if 'chirp' not in tweet:
                 continue
-            if 'words' not in tweet['chirp']:
+            if 'sentiment' not in tweet['chirp']:
                 continue
 
             result = collection.update_one(
                 {'_id': tweet['_id']}, {
-                    '$set': {'chirp.words': tweet['chirp']['words']}
+                    '$set': {'chirp.sentiment': tweet['chirp']['sentiment']}
                 })
             count = count + result.modified_count
 
