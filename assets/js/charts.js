@@ -13,9 +13,9 @@ var chart = function(dataUrl, chartElement, chartTitle, chartId, queryField) {
     var datasets = []
     var scales = {}
 
-    if (data.length > 1 && data.length < 4) {
-      charType = 'doughnut'
-    }
+    // if (data.length > 1 && data.length < 4) {
+    //   charType = 'doughnut'
+    // }
 
     for (var i = 0; i < data.length; i++) {
       data[i].id = data[i]._id
@@ -45,7 +45,6 @@ var chart = function(dataUrl, chartElement, chartTitle, chartId, queryField) {
         {
           label: chartTitle,
           backgroundColor: colours,
-          borderColor: colours,
           data: values
         }
       ]
@@ -84,6 +83,9 @@ var chart = function(dataUrl, chartElement, chartTitle, chartId, queryField) {
     })
 
     if (queryField) {
+      $(ctx).hover(function(evt) {
+        $(ctx).css('cursor', 'pointer')
+      })
       $(ctx).click(function(evt) {
         var item = chart.getElementAtEvent(evt)[0]
 
@@ -95,7 +97,6 @@ var chart = function(dataUrl, chartElement, chartTitle, chartId, queryField) {
             queryField +
             '&query-value=' +
             encodeURIComponent(label)
-          console.log(label, value)
         }
       })
     }
