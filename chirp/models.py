@@ -18,6 +18,9 @@ class User(AbstractUser):
 class AggregationFramework(PolymorphicModel):
     title = models.CharField(max_length=64, unique=True)
     slug = models.CharField(max_length=128)
+    query_field = models.CharField(
+        max_length=32, blank=True, null=True,
+        help_text='The name of the field used to drill-down results')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
@@ -30,8 +33,10 @@ class AggregationFramework(PolymorphicModel):
     def __str__(self):
         return self.title
 
+    def perform(self, f, query=None):
+        pass
+
     def save(self, *args, **kwargs):
-        print('models', self.user)
         self.slug = slugify(self.title)
         super().save(*args, **kwargs)
 
@@ -42,9 +47,18 @@ class Aggregation(AggregationFramework):
     class Meta:
         verbose_name = 'Aggregation'
 
-    def perform(self, f):
+    def perform(self, f, query=None):
         collection = f.get_mongo_collection()
-        result = collection.aggregate(self.pipeline_js)
+        pipeline = self.pipeline_js
+
+        if query:
+            if '$match' not in pipeline[0]:
+                pipeline.insert(0, {'$match': {}})
+
+            for k in query.keys():
+                pipeline[0]['$match'][k] = query[k]
+
+        result = collection.aggregate(pipeline)
 
         return list(result)
 
@@ -58,13 +72,18 @@ class MapReduce(AggregationFramework):
         verbose_name = 'Map/Reduce'
         verbose_name_plural = 'Mappers/Reducers'
 
-    def perform(self, f):
+    def perform(self, f, query=None):
         collection = f.get_mongo_collection()
+
+        if query:
+            query = {'$and': [self.query_js, query]}
+        else:
+            query = self.query_js
 
         result = collection.map_reduce(
             Code(self.mapper_js), Code(self.reducer_js),
             '{}_{}'.format(f.uid, slugify(self.title)),
-            query=self.query_js)
+            query=query)
 
         return list(result.find())
 
@@ -88,14 +107,17 @@ class Filter(models.Model):
                    'One bounding box per line.')
     )
 
+    sentiment_threshold = models.DecimalField(
+        max_digits=2, decimal_places=1, default=0.0,
+        help_text=('Minimum value used to label tweets '
+                   'with positive/negative sentiment.'))
+
     aggregations = models.ManyToManyField(
         AggregationFramework, related_name='filters')
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
-
-    active_query = None
 
     def __str__(self):
         return self.title
@@ -147,7 +169,7 @@ class Filter(models.Model):
 
         return cursor
 
-    def get_words(self):
+    def get_words(self, query=None):
         collection = self.get_mongo_collection()
         mapper_js = Code("""function() {
             for (var w in this.chirp.words) {
@@ -159,7 +181,8 @@ class Filter(models.Model):
         }""")
         result = collection.map_reduce(
             mapper_js, reducer_js,
-            '{}_{}'.format(self.uid, slugify(self.title)))
+            '{}_{}'.format(self.uid, slugify(self.title)),
+            query=query)
         total_words = result.count()
 
         words = [[item['_id'], item['value']]
