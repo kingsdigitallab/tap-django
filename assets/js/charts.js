@@ -1,6 +1,6 @@
 var colourSchemes = ['tol-dv', 'tol-sq', 'tol-rainbow']
 
-var chart = function(dataUrl, chartElement, chartTitle, chartId) {
+var chart = function(dataUrl, chartElement, chartTitle, chartId, queryField) {
   $.getJSON(dataUrl, function(data) {
     var ctx = $(chartElement)
     var colours = chartJsColours(palette(colourSchemes, data.length, 0))
@@ -82,6 +82,23 @@ var chart = function(dataUrl, chartElement, chartTitle, chartId) {
         scales: scales
       }
     })
+
+    if (queryField) {
+      $(ctx).click(function(evt) {
+        var item = chart.getElementAtEvent(evt)[0]
+
+        if (item) {
+          var label = chart.data.labels[item._index]
+          var value = chart.data.datasets[item._datasetIndex].data[item._index]
+          location.href =
+            '?query-field=' +
+            queryField +
+            '&query-value=' +
+            encodeURIComponent(label)
+          console.log(label, value)
+        }
+      })
+    }
   }).fail(function() {
     alert('error')
   })
