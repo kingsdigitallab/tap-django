@@ -167,7 +167,7 @@ class Filter(models.Model):
     def get_tweets(self, query=None, page=1):
         collection = self.get_mongo_collection()
         cursor = collection.find(
-            filter=query, limit=10, sort=[('created_at', DESCENDING)])
+            filter=query, sort=[('timestamp_ms', DESCENDING)], limit=10)
 
         return cursor
 
