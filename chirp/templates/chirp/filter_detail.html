@@ -33,11 +33,11 @@
       <div class="column is-one-quarter">
         <p class="title">Tweets ({{ tweets.count }})</p>
         <ul class="tweets">
+          {% for tweet in tweets %}
           <li>
-            {% for tweet in tweets %}
             {% include 'chirp/includes/tweet.html' %}
-            {% endfor %}
           </li>
+          {% endfor %}
         </ul>
       </div>
     </div>
