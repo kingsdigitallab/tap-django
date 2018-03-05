@@ -20,7 +20,7 @@ class AggregationFramework(PolymorphicModel):
     title = models.CharField(max_length=64, unique=True)
     slug = models.CharField(max_length=128)
     query_field = models.CharField(
-        max_length=32, blank=True, null=True,
+        max_length=128, blank=True, null=True,
         help_text='The name of the field used to drill-down results')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
