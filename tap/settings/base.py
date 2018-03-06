@@ -291,7 +291,3 @@ MONGO_DB_URI = 'mongodb://localhost:27017/'
 MONGO_DB_NAME = PROJECT_NAME
 
 TWITTER_API_URL = 'https://stream.twitter.com/1.1/statuses/filter.json'
-TWITTER_API_KEY = ''
-TWITTER_API_SECRET = ''
-TWITTER_ACCESS_TOKEN = ''
-TWITTER_ACCESS_TOKEN_SECRET = ''

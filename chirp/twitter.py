@@ -22,8 +22,11 @@ def harvest(f):
 
 
 def _process_tweets(f, collection):
+    if not f.user.has_twitter_credentials:
+        return
+
     tweets = tweet_generator(
-        follow=f.follow, track=f.track, locations=f.locations)
+        f.user, follow=f.follow, track=f.track, locations=f.locations)
     for t in tweets:
         # TODO: better way to check this
         f.refresh_from_db()
@@ -38,11 +41,11 @@ def _process_tweets(f, collection):
             collection.insert(t)
 
 
-def tweet_generator(follow='', track='', locations=''):
+def tweet_generator(user, follow='', track='', locations=''):
     url = s.TWITTER_API_URL
-    auth = OAuth1(s.TWITTER_API_KEY, s.TWITTER_API_SECRET,
-                  s.TWITTER_ACCESS_TOKEN,
-                  s.TWITTER_ACCESS_TOKEN_SECRET)
+    auth = OAuth1(user.twitter_api_key, user.twitter_api_secret,
+                  user.twitter_access_token,
+                  user.twitter_access_token_secret)
 
     response = requests.post(url, auth=auth, stream=True, data={
         'follow': follow, 'track': track, 'locations': locations

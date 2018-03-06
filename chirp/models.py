@@ -13,7 +13,21 @@ from .fields import JavaScriptField
 
 
 class User(AbstractUser):
-    pass
+    twitter_api_key = models.CharField(max_length=64)
+    twitter_api_secret = models.CharField(max_length=64)
+    twitter_access_token = models.CharField(max_length=64)
+    twitter_access_token_secret = models.CharField(max_length=64)
+
+    @property
+    def has_twitter_credentials(self):
+        credentials = '{}{}{}{}'.format(
+            self.twitter_api_key, self.twitter_api_secret,
+            self.twitter_access_token, self.twitter_access_token_secret)
+
+        if credentials:
+            return True
+
+        return False
 
 
 class AggregationFramework(PolymorphicModel):
@@ -90,7 +104,11 @@ class MapReduce(AggregationFramework):
 
 
 class Filter(models.Model):
-    active = models.BooleanField(help_text='Set active to harvest tweets.')
+    active = models.BooleanField(
+        help_text=('Set active to harvest tweets.'
+                   'You need to have twitter credentials in your account '
+                   'to be able to harvest tweets.')
+    )
     title = models.CharField(max_length=64, unique=True)
     follow = models.CharField(
         max_length=64, blank=True, null=True,
