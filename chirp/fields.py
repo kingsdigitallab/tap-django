@@ -12,9 +12,9 @@ class JavaScriptWidget(widgets.Textarea):
                     'vendor/codemirror/theme/solarized.css']
         }
         js = ['vendor/codemirror/lib/codemirror.js',
-              'vendor/CodeMirror/mode/javascript/javascript.js',
-              'vendor/CodeMirror/addon/selection/active-line.js',
-              'vendor/CodeMirror/addon/edit/matchbrackets.js',
+              'vendor/codemirror/mode/javascript/javascript.js',
+              'vendor/codemirror/addon/selection/active-line.js',
+              'vendor/codemirror/addon/edit/matchbrackets.js',
               'js/admin.js']
 
 
