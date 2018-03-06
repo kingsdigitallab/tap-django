@@ -56,8 +56,8 @@
 {% block footer_scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 <script src="https://google.github.io/palette.js/palette.js"></script>
-<script src="{% static '/vendor/wordcloud2.js/src/wordcloud2.js' %}"></script>
-<script src="{% static '/js/charts.js' %}"></script>
+<script src="{% static 'vendor/wordcloud2.js/src/wordcloud2.js' %}"></script>
+<script src="{% static 'js/charts.js' %}"></script>
 <script>
 $(function() {
   {% for a in object.get_aggregations %}
