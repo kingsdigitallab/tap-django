@@ -20,7 +20,11 @@
             </div>
         </div>
         <div class="content">
+            {% if tweet.extended_tweet.full_text %}
+            {{ tweet.extended_tweet.full_text|safe }}
+            {% else %}
             {{ tweet.text|safe }}
+            {% endif %}
             <a href="//twitter.com/statuses/{{ tweet.id }}/" target="{{ tweet.id }}">View</a>
             <br>
             <time>{{ tweet.created_at }}</time>
