@@ -5,7 +5,7 @@ from django.core.serializers import base, python
 from django.db import migrations
 
 
-def load_fixture(apps, schema_editor):
+def load_aggregations(apps, schema_editor):
     # See https://stackoverflow.com/a/39743581 for more information about the
     # implementation of this migration
 
@@ -35,11 +35,17 @@ def load_fixture(apps, schema_editor):
         python._get_model = old_get_model
 
 
+def remove_aggregations(apps, schema_editor):
+    AggregationFramework = apps.get_model('chirp', 'AggregationFramework')
+    AggregationFramework.objects.all().delete()
+
+
 class Migration(migrations.Migration):
     dependencies = [
         ('chirp', '0028_alter_field_query_field_on_aggregationframework'),
     ]
 
     operations = [
-        migrations.RunPython(load_fixture),
+        migrations.RunPython(
+            load_aggregations, reverse_code=remove_aggregations),
     ]

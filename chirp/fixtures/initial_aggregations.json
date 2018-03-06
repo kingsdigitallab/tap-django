@@ -3,7 +3,7 @@
         "fields": {
             "created": "2018-02-21T12:11:24.672Z",
             "modified": "2018-03-02T13:56:17.787Z",
-            "polymorphic_ctype": 10,
+            "polymorphic_ctype": ["chirp", "aggregation"],
             "query_field": null,
             "slug": "sentiment-average",
             "title": "Sentiment: average",
@@ -16,7 +16,7 @@
         "fields": {
             "created": "2018-02-21T12:11:24.672Z",
             "modified": "2018-03-02T16:02:41.068Z",
-            "polymorphic_ctype": 11,
+            "polymorphic_ctype": ["chirp", "mapreduce"],
             "query_field": "place.country_code",
             "slug": "sentiment-by-country",
             "title": "Sentiment: by country",
@@ -29,7 +29,7 @@
         "fields": {
             "created": "2018-02-21T12:11:24.672Z",
             "modified": "2018-03-02T16:03:29.566Z",
-            "polymorphic_ctype": 11,
+            "polymorphic_ctype": ["chirp", "mapreduce"],
             "query_field": "chirp.sentiment.label",
             "slug": "sentiment-distribution",
             "title": "Sentiment: distribution",
@@ -42,7 +42,7 @@
         "fields": {
             "created": "2018-02-21T12:11:24.672Z",
             "modified": "2018-03-02T13:58:39.606Z",
-            "polymorphic_ctype": 11,
+            "polymorphic_ctype": ["chirp", "mapreduce"],
             "query_field": null,
             "slug": "sentiment-label-by-date",
             "title": "Sentiment: label by date",
@@ -55,7 +55,7 @@
         "fields": {
             "created": "2018-02-21T12:11:24.672Z",
             "modified": "2018-03-02T13:59:10.536Z",
-            "polymorphic_ctype": 11,
+            "polymorphic_ctype": ["chirp", "mapreduce"],
             "query_field": "place.country_code",
             "slug": "tweets-by-country",
             "title": "Tweets: by country",
@@ -68,7 +68,7 @@
         "fields": {
             "created": "2018-02-27T11:03:51.892Z",
             "modified": "2018-03-02T16:03:05.521Z",
-            "polymorphic_ctype": 11,
+            "polymorphic_ctype": ["chirp", "mapreduce"],
             "query_field": "place.full_name",
             "slug": "sentiment-by-place",
             "title": "Sentiment: by place",
@@ -81,7 +81,7 @@
         "fields": {
             "created": "2018-02-27T11:06:23.866Z",
             "modified": "2018-03-02T16:05:08.532Z",
-            "polymorphic_ctype": 11,
+            "polymorphic_ctype": ["chirp", "mapreduce"],
             "query_field": "place.full_name",
             "slug": "tweets-by-place",
             "title": "Tweets: by place",
@@ -94,7 +94,7 @@
         "fields": {
             "created": "2018-03-02T13:30:45.520Z",
             "modified": "2018-03-02T13:57:49.032Z",
-            "polymorphic_ctype": 11,
+            "polymorphic_ctype": ["chirp", "mapreduce"],
             "query_field": null,
             "slug": "sentiment-by-date",
             "title": "Sentiment: by date",
@@ -107,7 +107,7 @@
         "fields": {
             "created": "2018-03-02T14:42:54.494Z",
             "modified": "2018-03-05T15:41:48.916Z",
-            "polymorphic_ctype": 10,
+            "polymorphic_ctype": ["chirp", "aggregation"],
             "query_field": "entities.hashtags.text",
             "slug": "hashtags-top-20",
             "title": "Hashtags: top 20",
@@ -120,7 +120,7 @@
         "fields": {
             "created": "2018-03-05T15:44:01.825Z",
             "modified": "2018-03-05T15:59:42.214Z",
-            "polymorphic_ctype": 10,
+            "polymorphic_ctype": ["chirp", "aggregation"],
             "query_field": "entities.user_mentions.screen_name",
             "slug": "users-mentions-top-25",
             "title": "Users: mentions top 25",
