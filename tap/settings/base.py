@@ -251,13 +251,6 @@ COMPRESS_PRECOMPILERS = (
 )
 
 # -----------------------------------------------------------------------------
-# Django Grappelli
-# http://django-grappelli.readthedocs.org/en/latest/
-# -----------------------------------------------------------------------------
-
-GRAPPELLI_ADMIN_TITLE = PROJECT_TITLE
-
-# -----------------------------------------------------------------------------
 # FABRIC
 # -----------------------------------------------------------------------------
 
@@ -277,7 +270,6 @@ GA_ID = ''
 db_engine = 'django.db.backends.postgresql_psycopg2'
 if 'django.contrib.gis' in INSTALLED_APPS:
     db_engine = 'django.contrib.gis.db.backends.postgis'
-
 
 AC_BASE_URL = 'https://app.activecollab.com/148987'
 AC_API_URL = AC_BASE_URL + '/api/v1/'
