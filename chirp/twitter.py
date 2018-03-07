@@ -106,15 +106,16 @@ def get_text_from_tweet(tweet):
     if 'text' not in tweet:
         return None
 
-    text = tweet['text']
+    if 'extended_tweet' in tweet:
+        return tweet['extended_tweet']['full_text']
 
     if 'retweeted_status' in tweet:
         if 'extended_tweet' in tweet['retweeted_status']:
-            text = tweet['retweeted_status']['extended_tweet']['full_text']
+            return tweet['retweeted_status']['extended_tweet']['full_text']
         else:
-            text = tweet['retweeted_status']['text']
+            return tweet['retweeted_status']['text']
 
-    return text
+    return tweet['text']
 
 
 def _get_sentiment_from_tweet_text(text):
