@@ -29,7 +29,7 @@ class FilterDetailView(DetailView):
 def _get_query(request):
     if 'query-field' in request.GET:
         if 'query-value' in request.GET:
-            regex = re.compile(r'\b{}\b'.format(request.GET['query-value']),
+            regex = re.compile(r'{}'.format(request.GET['query-value']),
                                re.IGNORECASE)
             query = {request.GET['query-field']: regex}
 
