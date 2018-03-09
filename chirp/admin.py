@@ -1,4 +1,3 @@
-from apscheduler.jobstores.base import JobLookupError
 from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
@@ -7,10 +6,8 @@ from polymorphic.admin import (PolymorphicChildModelAdmin,
                                PolymorphicChildModelFilter,
                                PolymorphicParentModelAdmin)
 
-from .apscheduler import scheduler
 from .fields import JavaScriptWidget
 from .models import Aggregation, AggregationFramework, Filter, MapReduce, User
-from .twitter import harvest
 
 
 class AggregationFrameworkForm(forms.ModelForm):
@@ -59,19 +56,11 @@ class FilterAdmin(admin.ModelAdmin):
                     'modified']
 
     def save_model(self, request, obj, form, change):
-        obj.user = request.user
+        try:
+            obj.user
+        except Exception:
+            obj.user = request.user
         super().save_model(request, obj, form, change)
-
-        if obj.active:
-            if obj.user.has_twitter_credentials:
-                scheduler.add_job(harvest, 'interval', args=[obj], id=obj.uid,
-                                  minutes=1, max_instances=1,
-                                  replace_existing=True)
-        else:
-            try:
-                scheduler.remove_job(obj.uid)
-            except JobLookupError:
-                pass
 
 
 @admin.register(User)

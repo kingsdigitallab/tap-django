@@ -3,10 +3,15 @@ from django.conf import settings as s
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.text import slugify
 from jsonfield import JSONField
 from polymorphic.models import PolymorphicModel
 from pymongo import DESCENDING, MongoClient
+from apscheduler.jobstores.base import JobLookupError
+from .apscheduler import scheduler
+from .twitter import harvest
 
 from . import aggregations
 from .fields import JavaScriptField
@@ -209,3 +214,20 @@ class Filter(models.Model):
                  for item in list(result.find())
                  if item['value'] / total_words > 0.025]
         return words
+
+
+@receiver(post_save, sender=Filter, dispatch_uid="add_remove_job")
+def add_remove_jobs(sender, instance, **kwargs):
+    print("post_save")
+    if instance.active:
+            if instance.user.has_twitter_credentials:
+                scheduler.add_job(harvest, 'interval',
+                                  args=[instance],
+                                  id=instance.uid,
+                                  minutes=1, max_instances=1,
+                                  replace_existing=True)
+    else:
+        try:
+            scheduler.remove_job(instance.uid)
+        except JobLookupError:
+            pass
