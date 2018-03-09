@@ -28,6 +28,8 @@ LOGGING['loggers']['tap']['level'] = LOGGING_LEVEL
 
 SECRET_KEY = ''
 
+MONGO_DB_NAME = PROJECT_NAME + '_dev'
+
 # -----------------------------------------------------------------------------
 # Django Debug Toolbar
 # http://django-debug-toolbar.readthedocs.org/en/latest/
