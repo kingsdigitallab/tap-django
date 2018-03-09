@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('chirp', '0030_add_twitter_fields_to_user'),
+        ('chirp', '0030_load_aggregations'),
     ]
 
     operations = [
