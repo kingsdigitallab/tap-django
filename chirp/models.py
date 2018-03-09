@@ -2,6 +2,8 @@ from bson.code import Code
 from django.conf import settings as s
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -146,6 +148,15 @@ class Filter(models.Model):
 
     def __str__(self):
         return self.title
+
+    def clean(self):
+        if not self.follow and not self.track and not self.locations:
+            raise ValidationError(_(
+                'Fill at least one of follow, track, or locations'))
+
+        if self.active and not self.user.has_twitter_credentials():
+            raise ValidationError(_(
+                'Set you twitter credentials before activating a filter'))
 
     @property
     def uid(self):
