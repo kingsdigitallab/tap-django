@@ -82,8 +82,8 @@ INSTALLED_APPS = [
 
 INSTALLED_APPS += [    # your project apps here
     'activecollab_digger',
-    'kdl_ldap',
     'django_apscheduler',
+    'kdl_ldap',
     'rest_framework',
     'chirp'
 ]
