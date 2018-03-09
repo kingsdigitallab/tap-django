@@ -42,6 +42,8 @@ def remove_aggregations(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
+        ('django_apscheduler', '0001_initial'),
+        ('sessions', '0001_initial'),
         ('chirp', '0028_alter_field_query_field_on_aggregationframework'),
     ]
 

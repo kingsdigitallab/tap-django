@@ -288,20 +288,32 @@
   vars_files:
     - vars.yml
   tasks:
+
+
+  - name: nltk | download
+    command: "{{ user_home }}/venv/bin/python -c \"import nltk; nltk.download('all')\""
+    tags:
+      - nltk
+
   - name: django | default local settings
     copy: src=local_settings.py dest={{ project_root }}/{{ app.name }}/settings/local.py owner=vagrant
     tags:
       - django
 
-  - name: django | migrations
+  - name: django | migrations 
     command: "{{ user_home }}/venv/bin/python {{ project_root }}/manage.py makemigrations"
-  - command: "{{ user_home }}/venv/bin/python {{ project_root }}/manage.py migrate"
+  - command: "{{ user_home }}/venv/bin/python {{ project_root }}/manage.py migrate auth"
     tags:
       - django
 
   - name: django | add default (vagrant/vagrant) superuser
     command: "{{ user_home }}/venv/bin/python {{ project_root }}/manage.py shell -c \"from django.contrib.auth.models import User; User.objects.create_superuser('vagrant', 'vagrant@localhost', 'vagrant')\""
     ignore_errors: yes # The user may already exist
+    tags:
+      - django
+
+  - name: django | migrations - finish
+    command: "{{ user_home }}/venv/bin/python {{ project_root }}/manage.py migrate"
     tags:
       - django
 
