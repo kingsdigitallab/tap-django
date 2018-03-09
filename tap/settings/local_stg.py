@@ -19,3 +19,5 @@ DATABASES = {
 }
 
 SECRET_KEY = ''
+
+MONGO_DB_NAME = PROJECT_NAME + '_stg'
