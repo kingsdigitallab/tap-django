@@ -1,0 +1,34 @@
+{% verbatim %}
+<p class="title">Tweets ({{ tweets.total }})</p>
+<ul>
+    <li v-for="tweet in tweets.tweets">
+        <div class="card">
+            <div v-if="tweet.entities.media && tweet.entities.media[0].type === 'photo'" class="card-image">
+                <figure class="image">
+                    <img :src="tweet.entities.media[0].media_url_https">
+                </figure>
+            </div>
+            <div class="card-content">
+                <div class="media">
+                    <div class="media-left">
+                        <figure class="image is-48x48">
+                            <img :src="tweet.user.profile_image_url_https">
+                        </figure>
+                    </div>
+                    <div class="media-content">
+                        <p class="title is-5">{{ tweet.user.name }}</p>
+                        <p class="subtitle is-6">@{{ tweet.user.screen_name }}</p>
+                    </div>
+                </div>
+                <div class="content">
+                    <p v-if="tweet.extended_tweet && tweet.extended_tweet.full_text">{{ tweet.extended_tweet.full_text }}</p>
+                    <p v-else>{{ tweet.text }}</p>
+                    <a :href="'//twitter.com/statuses/' + tweet.id" :target="tweet.id">View</a>
+                    <br>
+                    <time>{{ tweet.created_at }}</time>
+                </div>
+            </div>
+        </div>
+    </li>
+</ul>
+{% endverbatim %}

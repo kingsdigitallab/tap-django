@@ -34,23 +34,14 @@
           <canvas id="{{ a.slug }}"></canvas>
         </div>
         {% endfor %}
-      </div>
-      <div class="column is-one-quarter">
-        <p class="title">Tweets ({{ tweets.count }})</p>
-        <ul class="tweets">
-          {% for tweet in tweets %}
-          <li>
-            {% include 'chirp/includes/tweet.html' %}
-          </li>
-          {% endfor %}
-        </ul>
-      </div>
-    </div>
-    <div class="columns is-multiline">
-      <div class="column">
         <div class="chart">
           <p class="title">Words</p>
           <div class="wordcloud" id="wordcloud"></div>
+        </div>
+      </div>
+      <div class="column is-one-quarter">
+        <div id="tweets">
+          {% include 'chirp/includes/tweets.html' %}
         </div>
       </div>
     </div>
@@ -61,8 +52,10 @@
 {% block footer_scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 <script src="https://google.github.io/palette.js/palette.js"></script>
+<script src="https://unpkg.com/vue@2.5.14/dist/vue.js"></script>
 <script src="{% static 'vendor/wordcloud2.js/src/wordcloud2.js' %}"></script>
 <script src="{% static 'js/charts.js' %}"></script>
+<script src="{% static 'js/tweets.js' %}"></script>
 <script>
 $(function() {
   {% for a in object.get_aggregations %}

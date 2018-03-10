@@ -55,11 +55,15 @@ def get_filters(request):
 def get_tweets(request, filter_id):
     f = Filter.objects.get(id=filter_id)
     query = _get_query(request)
+    results = f.get_tweets(query=query)
 
-    tweets = [
-        json.loads(json.dumps(item, indent=4, default=json_util.default))
-        for item in f.get_tweets(query=query)
-    ]
+    tweets = {
+        'total': results.count(),
+        'tweets': [
+            json.loads(json.dumps(item, indent=4, default=json_util.default))
+            for item in results
+        ]
+    }
 
     return Response(tweets)
 
