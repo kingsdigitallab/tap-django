@@ -18,7 +18,9 @@ class FilterDetailView(DetailView):
         context = super().get_context_data(**kwargs)
 
         query = _get_query(self.request)
-        context['query'] = query
+        if query:
+            context['query_field'] = self.request.GET['query-field']
+            context['query_value'] = self.request.GET['query-value']
 
         f = Filter.objects.get(id=self.object.id)
         context['tweets'] = f.get_tweets(query=query)

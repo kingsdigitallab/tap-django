@@ -2,25 +2,30 @@
 {% load staticfiles %}
 
 {% block main %}
+<section class="hero is-light">
+  <div class="hero-body">
+    <div class="container">
+      <h1 class="title">
+        <a href="{% url 'filter-detail' object.id %}">{{ object.title }}</a>
+      </h1>
+      <h2 class="subtitle">
+        This filter is {% if not object.active %}not{% endif %} active,
+        has {{ object.number_of_tweets }} tweets,
+        average {{ object.sentiment }} sentiment
+        {% if query_field %}
+        | Results filtered by:
+        <span class="tag is-medium is-info">
+          {{ query_field }}: {{ query_value }}
+          <a class="button delete is-small" href="{% url 'filter-detail' object.id %}"></a>
+        </span>
+        {% endif %}
+      </h2>
+    </div>
+  </div>
+</section>
+
 <section class="section">
   <div class="container">
-    <h1 class="title">
-      <a href="{% url 'filter-detail' object.id %}">{{ object.title }}</a>
-    </h1>
-    <h2 class="subtitle">
-      The filter is {% if not object.active %}not{% endif %} active,
-      has {{ object.number_of_tweets }} tweets,
-      average {{ object.sentiment }} sentiment
-      <br />
-      Results filtered by:
-      {% if query %}
-      <span class="tag is-medium">
-        {{ query }}
-        <a class="delete is-small" href="{% url 'filter-detail' object.id %}"></a>
-      </span>
-      {% endif %}
-    </h2>
-
     <div class="columns is-multiline">
       <div class="column is-three-quarters">
         {% for a in object.get_aggregations %}
