@@ -1,6 +1,6 @@
 {% verbatim %}
-<p class="title">Tweets ({{ tweets.total }})</p>
-<ul>
+<p class="title">Tweets <span v-if="tweets">({{ tweets.total }})</span></p>
+<ul v-if="tweets">
     <li v-for="tweet in tweets.tweets">
         <div class="card">
             <div v-if="tweet.entities.media && tweet.entities.media[0].type === 'photo'" class="card-image">

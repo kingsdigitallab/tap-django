@@ -50,9 +50,9 @@
 {% endblock %}
 
 {% block footer_scripts %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
-<script src="https://google.github.io/palette.js/palette.js"></script>
-<script src="https://unpkg.com/vue@2.5.14/dist/vue.js"></script>
+<script src="{% static 'vendor/chart.js/dist/Chart.min.js' %}"></script>
+<script src="{% static 'vendor/palette.js/palette.js' %}"></script>
+<script src="{% static 'vendor/vue/dist/vue.min.js' %}"></script>
 <script src="{% static 'vendor/wordcloud2.js/src/wordcloud2.js' %}"></script>
 <script src="{% static 'js/charts.js' %}"></script>
 <script src="{% static 'js/tweets.js' %}"></script>

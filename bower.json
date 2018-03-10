@@ -1,13 +1,16 @@
 {
-    "name": "tap",
-    "version": "0.1",
     "dependencies": {
-        "jquery": null,
         "bulma": null,
+        "chart.js": null,
         "codemirror": null,
         "font-awesome": null,
+        "jquery": null,
+        "palette.js": null,
+        "vue": null,
         "wordcloud2.js": null
     },
+    "ignore": ["**/.*", "node_modules", "bower_components", "test", "tests"],
     "main": "assets/js/main.js",
-    "ignore": ["**/.*", "node_modules", "bower_components", "test", "tests"]
+    "name": "tap",
+    "version": "0.1"
 }
