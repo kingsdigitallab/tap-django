@@ -1,12 +1,11 @@
 from bson.code import Code
 from django.conf import settings as s
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-
 from django.utils.text import slugify
+from django.utils.translation import gettext_lazy as _
 from jsonfield import JSONField
 from polymorphic.models import PolymorphicModel
 from pymongo import DESCENDING, MongoClient

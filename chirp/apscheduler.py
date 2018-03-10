@@ -1,12 +1,11 @@
-from apscheduler.schedulers.background import BackgroundScheduler
-from django_apscheduler.jobstores import DjangoJobStore, register_events
 from apscheduler.jobstores.base import JobLookupError
-
-from .twitter import harvest
+from apscheduler.schedulers.background import BackgroundScheduler
+from chirp.models import Filter
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django_apscheduler.jobstores import DjangoJobStore, register_events
 
-from chirp.models import Filter
+from .twitter import harvest
 
 scheduler = BackgroundScheduler()
 scheduler.add_jobstore(DjangoJobStore(), 'default')
@@ -19,12 +18,12 @@ scheduler.start()
 def add_remove_jobs(sender, instance, **kwargs):
     print("post_save")
     if instance.active:
-            if instance.user.has_twitter_credentials:
-                scheduler.add_job(harvest, 'interval',
-                                  args=[instance],
-                                  id=instance.uid,
-                                  minutes=1, max_instances=1,
-                                  replace_existing=True)
+        if instance.user.has_twitter_credentials:
+            scheduler.add_job(harvest, 'interval',
+                              args=[instance],
+                              id=instance.uid,
+                              minutes=1, max_instances=1,
+                              replace_existing=True)
     else:
         try:
             scheduler.remove_job(instance.uid)

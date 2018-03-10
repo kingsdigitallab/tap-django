@@ -8,7 +8,7 @@ from django.conf import settings as s
 from nltk.corpus import stopwords
 from requests_oauthlib import OAuth1
 from simplejson.errors import JSONDecodeError
-from textblob import TextBlob, Word
+from textblob import TextBlob
 
 logger = logging.getLogger(__name__)
 
@@ -186,7 +186,9 @@ def _is_emoticon(token):
 
 
 def _get_lemma(token):
-    return Word(token.lower()).lemmatize()
+    # lemmatisation is not working properly, turning it off for now
+    # return Word(token.lower()).lemmatize()
+    return token.lower()
 
 
 stop = stopwords.words('english')
