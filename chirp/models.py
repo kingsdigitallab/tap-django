@@ -167,7 +167,17 @@ class Filter(models.Model):
         client = MongoClient(s.MONGO_DB_URI)
         db = client[s.MONGO_DB_NAME]
         collection = db[self.uid]
+
+        self._ensure_index(collection)
+
         return collection
+
+    def _ensure_index(self, collection):
+        idx_name = '{}_idx_id'.format(self.uid)
+
+        if idx_name not in collection.index_information():
+            collection.create_index(
+                'id', name=idx_name, background=True, unique=True)
 
     @property
     def sentiment(self):
@@ -193,10 +203,13 @@ class Filter(models.Model):
     def get_aggregations(self):
         return self.aggregations.all().order_by('title')
 
-    def get_tweets(self, query=None, page=1):
+    def get_tweets(self, query=None, page=1, per_page=20):
+        start = (page - 1) * per_page
+
         collection = self.get_mongo_collection()
         cursor = collection.find(
-            filter=query, sort=[('timestamp_ms', DESCENDING)], limit=20)
+            filter=query, sort=[('timestamp_ms', DESCENDING)],
+            skip=start, limit=per_page)
 
         return cursor
 
