@@ -232,4 +232,5 @@ class Filter(models.Model):
         words = [[item['_id'], item['value']]
                  for item in list(result.find())
                  if item['value'] / total_words > 0.025]
+
         return words
