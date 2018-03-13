@@ -34,7 +34,7 @@ var tweets = new Vue({
       var xhr = new XMLHttpRequest()
       var self = this
 
-      xhr.open('GET', apiURL + '?' + params.toString())
+      xhr.open('GET', apiURL + self.page + '/?' + params.toString())
       xhr.onload = function() {
         self.tweets = JSON.parse(xhr.responseText)
       }

@@ -52,10 +52,10 @@ def get_filters(request):
 
 
 @api_view(['GET'])
-def get_tweets(request, filter_id):
+def get_tweets(request, filter_id, page=1):
     f = Filter.objects.get(id=filter_id)
     query = _get_query(request)
-    results = f.get_tweets(query=query)
+    results = f.get_tweets(query=query, page=page)
 
     tweets = {
         'total': results.count(),

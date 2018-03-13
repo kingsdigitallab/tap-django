@@ -9,7 +9,7 @@ urlpatterns = [
          name='filter-detail'),
     path('filters/<int:filter_id>/aggregation/<int:aggregation_id>/',
          perform_aggregation, name='perform-aggregation'),
-    path('filters/<int:filter_id>/tweets/',
+    path('filters/<int:filter_id>/tweets/<int:page>/',
          get_tweets, name='get-tweets'),
     path('filters/<int:filter_id>/words/',
          get_words, name='get-words'),
