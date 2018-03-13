@@ -6,6 +6,7 @@ import requests
 import simplejson
 from django.conf import settings as s
 from nltk.corpus import stopwords
+from pymongo.errors import DuplicateKeyError
 from requests_oauthlib import OAuth1
 from simplejson.errors import JSONDecodeError
 from textblob import TextBlob
@@ -38,7 +39,12 @@ def _process_tweets(f, collection):
         t = _add_npl_to_tweet(t, f.sentiment_threshold)
 
         if not collection.find_one({'id_str': t['id_str']}):
-            collection.insert(t)
+            try:
+                collection.insert_one(t)
+            except DuplicateKeyError:
+                # this should not happen, but just in case it does, we ignore
+                # it because there is already a copy of the tweet in the db
+                pass
 
 
 def tweet_generator(user, follow='', track='', locations=''):
