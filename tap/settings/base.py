@@ -12,6 +12,7 @@ import getpass
 import logging
 import os
 
+from django_auth_ldap.config import LDAPGroupQuery
 from kdl_ldap.settings import *  # noqa
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -277,7 +278,12 @@ AC_PROJECT_ID = 932
 AC_USER = 36
 AC_TOKEN = ''
 
-AUTH_LDAP_REQUIRE_GROUP = 'cn=tap,' + LDAP_BASE_OU
+AUTH_LDAP_REQUIRE_GROUP = (
+    (
+        LDAPGroupQuery('cn=kdl-staff,' + LDAP_BASE_OU) |
+        LDAPGroupQuery('cn=tap,' + LDAP_BASE_OU)
+    )
+)
 
 MONGO_DB_URI = 'mongodb://localhost:27017/'
 MONGO_DB_NAME = PROJECT_NAME
