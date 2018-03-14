@@ -101,7 +101,7 @@ var chart = function(dataUrl, chartElement, chartTitle, chartId, queryField) {
       })
     }
   }).fail(function() {
-    alert('error')
+    $(chartElement).parent.append('Failed to get data for chart: ' + chartTitle)
   })
 }
 
@@ -127,7 +127,7 @@ var wordcloud = function(dataUrl, chartElementId) {
       width: width
     })
   }).fail(function() {
-    alert('error')
+    $('#' + chartElementId).html('Failed to get data for wordcloud')
   })
 
   $el.on('wordcloudstop', function wordcloudstopped(evt) {
