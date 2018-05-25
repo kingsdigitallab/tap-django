@@ -1,8 +1,12 @@
-# tap-django
+# Twitter Analytcs Platform
 
-This is the repository for the tap project at [Kings Digital Lab](https://kdl.kcl.ac.uk)
+This is the repository for the Twitter Analytcs Platform project at [Kings Digital Lab](https://kdl.kcl.ac.uk). The Twitter Analytcs Platform project is used to harvest and analyse tweets.
 
 This project uses the technologies outlined in our [Technology Stack](https://stackshare.io/kings-digital-lab/django) and is configured to use [Vagrant](https://www.vagrantup.com/) for local development and [Fabric](http://www.fabfile.org/) for deployment.
+
+More specificaly the project is built with Django using a PostgreSQL database, and the tweets are stored in a MongoDB database. Django APScheduler is used to schedule the harvesting of the tweets, and TextBlob/NLTK is used for NLP and sentiment analysis. The frontend is built with Vue.js, and uses chart.js and word2cloud.js to create the visualisations.
+
+Before starting to harvest tweets, the user accounts need to have associated Twitter API credentials. The credentials can be set up via the Django admin interface.
 
 ## Getting started
 1. Enter the project directory: `cd tap-django`
