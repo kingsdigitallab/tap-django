@@ -1,4 +1,4 @@
-# Twitter Analytcs Platform
+# Twitter Analytics Platform
 
 This is the repository for the Twitter Analytcs Platform project at [Kings Digital Lab](https://kdl.kcl.ac.uk). The Twitter Analytcs Platform project is used to harvest and analyse tweets.
 
