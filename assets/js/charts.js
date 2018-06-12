@@ -1,9 +1,11 @@
-var colourSchemes = ['tol-dv', 'tol-sq', 'tol-rainbow']
-
 var chart = function(dataUrl, chartElement, chartTitle, chartId, queryField) {
   $.getJSON(dataUrl, function(data) {
     var ctx = $(chartElement)
-    var colours = chartJsColours(palette(colourSchemes, data.length, 0))
+    var colours = {
+      negative: '#ee7674',
+      neutral: '#fef6c9',
+      positive: '#4d9de0'
+    }
 
     var charType = 'bar'
 
@@ -31,6 +33,7 @@ var chart = function(dataUrl, chartElement, chartTitle, chartId, queryField) {
             colours[Object.keys(datasetsObj).length - 1]
           datasetsObj[el.id].data = []
         }
+
         datasetsObj[el.id].data.push(data[i].value)
       } else {
         labels.push(data[i].id)
@@ -44,7 +47,9 @@ var chart = function(dataUrl, chartElement, chartTitle, chartId, queryField) {
       datasets = [
         {
           label: chartTitle,
-          backgroundColor: colours,
+          backgroundColor: values.map(
+            value => (value < 0 ? colours.negative : colours.positive)
+          ),
           data: values
         }
       ]
@@ -53,6 +58,7 @@ var chart = function(dataUrl, chartElement, chartTitle, chartId, queryField) {
       labels = Array.from(new Set(labels))
 
       for (var key in datasetsObj) {
+        datasetsObj[key].backgroundColor = colours[key]
         datasets.push(datasetsObj[key])
       }
 
@@ -102,12 +108,6 @@ var chart = function(dataUrl, chartElement, chartTitle, chartId, queryField) {
     }
   }).fail(function() {
     $(chartElement).parent.append('Failed to get data for chart: ' + chartTitle)
-  })
-}
-
-var chartJsColours = function(colors) {
-  return colors.map(function(color) {
-    return '#' + color
   })
 }
 
