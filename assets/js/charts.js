@@ -123,7 +123,11 @@ var wordcloud = function(dataUrl, chartElementId) {
       backgroundColor: '#f0f0f0',
       color: 'random-dark',
       gridSize: 8,
-      weightFactor: 0.1,
+      height: height,
+      minSize: 8,
+      weightFactor: function(size) {
+        return size * $el.width() / data[0][1]
+      },
       width: width
     })
   }).fail(function() {
