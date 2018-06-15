@@ -215,22 +215,18 @@ class Filter(models.Model):
 
     def get_words(self, query=None):
         collection = self.get_mongo_collection()
-        mapper_js = Code("""function() {
-            for (var w in this.chirp.words) {
-                emit(this.chirp.words[w], 1);
-            }
-        }""")
-        reducer_js = Code("""function(key, values) {
-            return Array.sum(values);
-        }""")
-        result = collection.map_reduce(
-            mapper_js, reducer_js,
-            '{}_{}'.format(self.uid, slugify(self.title)),
-            query=query)
-        total_words = result.count()
 
-        words = [[item['_id'], item['value']]
-                 for item in list(result.find())
-                 if item['value'] / total_words > 0.025]
+        pipeline = aggregations.words_top_200[:]
+
+        if query:
+            if '$match' not in pipeline[0]:
+                pipeline.insert(0, {'$match': {}})
+
+            for k in query.keys():
+                pipeline[0]['$match'][k] = query[k]
+
+        data = list(collection.aggregate(pipeline))
+
+        words = [[i['_id'], i['value']] for i in data]
 
         return words
