@@ -15,10 +15,12 @@ from .fields import JavaScriptField
 
 
 class User(AbstractUser):
-    twitter_api_key = models.CharField(max_length=64)
-    twitter_api_secret = models.CharField(max_length=64)
-    twitter_access_token = models.CharField(max_length=64)
-    twitter_access_token_secret = models.CharField(max_length=64)
+    twitter_api_key = models.CharField(max_length=64, blank=True, null=True)
+    twitter_api_secret = models.CharField(max_length=64, blank=True, null=True)
+    twitter_access_token = models.CharField(
+        max_length=64, blank=True, null=True)
+    twitter_access_token_secret = models.CharField(
+        max_length=64, blank=True, null=True)
 
     @property
     def has_twitter_credentials(self):
