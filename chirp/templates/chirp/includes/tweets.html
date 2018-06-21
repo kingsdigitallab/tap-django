@@ -1,5 +1,10 @@
 {% verbatim %}
 <p class="title">Tweets <span v-if="tweets">({{ tweets.total }})</span></p>
+
+<pagination v-if="tweets" :cur-page="page" :next-page="tweets.next_page" :prev-page="tweets.prev_page" :next-page-function="fetchNextPage" :prev-page-function="fetchPrevPage"></pagination>
+
+<br>
+
 <ul v-if="tweets">
     <li v-for="tweet in tweets.tweets">
         <div class="card">
@@ -31,4 +36,8 @@
         </div>
     </li>
 </ul>
+
+<br>
+
+<pagination v-if="tweets" :cur-page="page" :next-page="tweets.next_page" :prev-page="tweets.prev_page" :next-page-function="fetchNextPage" :prev-page-function="fetchPrevPage"></pagination>
 {% endverbatim %}

@@ -1,0 +1,23 @@
+<div class="hidden">
+    {% verbatim %}
+    <div id="pagination-template">
+        <p class="has-text-centered">
+            <button @click="getPrevPage" v-if="prevPage > 0" class="button is-active is-link" title="Previous page">
+                <i class="fa fa-angle-double-left"></i>
+            </button>
+            <button v-else disabled class="button" title="Previous page">
+                <i class="fa fa-angle-double-left"></i>
+            </button>
+
+            <span class="button is-info is-static" v-html="curPage"></span>
+
+            <button @click="getNextPage" v-if="nextPage > 0" class="button is-active is-link" title="Next page">
+                <i class="fa fa-angle-double-right"></i>
+            </button>
+            <button v-else disabled class="button" title="Next page">
+                <i class="fa fa-angle-double-right"></i>
+            </button>
+        </p>
+    </div>
+    {% endverbatim %}
+</div>

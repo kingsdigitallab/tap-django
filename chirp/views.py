@@ -55,10 +55,25 @@ def get_filters(request):
 def get_tweets(request, filter_id, page=1):
     f = Filter.objects.get(id=filter_id)
     query = _get_query(request)
-    results = f.get_tweets(query=query, page=page)
+
+    per_page = 20
+    results = f.get_tweets(query=query, page=page, per_page=per_page)
+
+    total = results.count()
+    next_page = 0
+    prev_page = 0
+
+    if total:
+        if page > 1:
+            prev_page = page - 1
+
+        if page * per_page < total:
+            next_page = page + 1
 
     tweets = {
-        'total': results.count(),
+        'total': total,
+        'next_page': next_page,
+        'prev_page': prev_page,
         'tweets': [
             json.loads(json.dumps(item, indent=4, default=json_util.default))
             for item in results

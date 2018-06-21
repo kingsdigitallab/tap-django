@@ -1,5 +1,26 @@
 var apiURL = 'tweets/'
 
+Vue.component('pagination', {
+  props: [
+    'curPage',
+    'nextPage',
+    'prevPage',
+    'nextPageFunction',
+    'prevPageFunction'
+  ],
+
+  methods: {
+    getNextPage: function() {
+      this.nextPageFunction()
+    },
+    getPrevPage: function() {
+      this.prevPageFunction()
+    }
+  },
+
+  template: $('#pagination-template').html()
+})
+
 var tweets = new Vue({
   el: '#tweets',
 
@@ -40,6 +61,12 @@ var tweets = new Vue({
       }
 
       xhr.send()
+    },
+    fetchNextPage: function() {
+      this.page++
+    },
+    fetchPrevPage: function() {
+      this.page--
     }
   }
 })

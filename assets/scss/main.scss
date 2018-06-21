@@ -1,5 +1,10 @@
 @import '../vendor/bulma/bulma.sass';
 
+.hidden {
+    display: none;
+    visibility: hidden;
+}
+
 .wordcloud {
     display: inline-block;
     height: 100vh;
