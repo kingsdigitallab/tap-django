@@ -56,8 +56,6 @@
   - name: motd | clean existing
     become: yes
     shell: 'rm -rf /etc/update-motd.d/*'
-    file:
-      path:
     tags:
       - system
 
@@ -270,7 +268,7 @@
 
   - name: django | migrations 
     command: "{{ user_home }}/venv/bin/python {{ project_root }}/manage.py makemigrations"
-  - command: "{{ user_home }}/venv/bin/python {{ project_root }}/manage.py migrate chirp 0029"
+  - command: "{{ user_home }}/venv/bin/python {{ project_root }}/manage.py migrate"
     tags:
       - django
 
@@ -281,7 +279,7 @@
       - django
 
   - name: django | migrations - finish
-    command: "{{ user_home }}/venv/bin/python {{ project_root }}/manage.py migrate"
+    command: "{{ user_home }}/venv/bin/python {{ project_root }}/manage.py loaddata /vagrant/chirp/fixtures/initial_aggregations.json"
     tags:
       - django
 
