@@ -1,1 +1,291 @@
-[{"model": "chirp.aggregationframework", "pk": 1, "fields": {"polymorphic_ctype": ["chirp", "aggregation"], "title": "Sentiment: average", "slug": "sentiment-average", "query_field": null, "user": ["vagrant"], "created": "2018-02-21T12:11:24.672Z", "modified": "2018-03-02T13:56:17.787Z"}}, {"model": "chirp.aggregationframework", "pk": 2, "fields": {"polymorphic_ctype": ["chirp", "mapreduce"], "title": "Sentiment: by country", "slug": "sentiment-by-country", "query_field": "place.country_code", "user": ["vagrant"], "created": "2018-02-21T12:11:24.672Z", "modified": "2018-03-02T16:02:41.068Z"}}, {"model": "chirp.aggregationframework", "pk": 3, "fields": {"polymorphic_ctype": ["chirp", "mapreduce"], "title": "Sentiment: distribution", "slug": "sentiment-distribution", "query_field": "chirp.sentiment.label", "user": ["vagrant"], "created": "2018-02-21T12:11:24.672Z", "modified": "2018-03-02T16:03:29.566Z"}}, {"model": "chirp.aggregationframework", "pk": 4, "fields": {"polymorphic_ctype": ["chirp", "mapreduce"], "title": "Sentiment: label by date", "slug": "sentiment-label-by-date", "query_field": null, "user": ["vagrant"], "created": "2018-02-21T12:11:24.672Z", "modified": "2018-03-02T13:58:39.606Z"}}, {"model": "chirp.aggregationframework", "pk": 5, "fields": {"polymorphic_ctype": ["chirp", "mapreduce"], "title": "Tweets: by country", "slug": "tweets-by-country", "query_field": "place.country_code", "user": ["vagrant"], "created": "2018-02-21T12:11:24.672Z", "modified": "2018-03-02T13:59:10.536Z"}}, {"model": "chirp.aggregationframework", "pk": 14, "fields": {"polymorphic_ctype": ["chirp", "mapreduce"], "title": "Sentiment: by place", "slug": "sentiment-by-place", "query_field": "place.full_name", "user": ["vagrant"], "created": "2018-02-27T11:03:51.892Z", "modified": "2018-06-11T14:39:19.361Z"}}, {"model": "chirp.aggregationframework", "pk": 15, "fields": {"polymorphic_ctype": ["chirp", "mapreduce"], "title": "Tweets: by place", "slug": "tweets-by-place", "query_field": "place.full_name", "user": ["vagrant"], "created": "2018-02-27T11:06:23.866Z", "modified": "2018-03-02T16:05:08.532Z"}}, {"model": "chirp.aggregationframework", "pk": 16, "fields": {"polymorphic_ctype": ["chirp", "mapreduce"], "title": "Sentiment: by date", "slug": "sentiment-by-date", "query_field": null, "user": ["vagrant"], "created": "2018-03-02T13:30:45.520Z", "modified": "2018-03-02T13:57:49.032Z"}}, {"model": "chirp.aggregationframework", "pk": 17, "fields": {"polymorphic_ctype": ["chirp", "aggregation"], "title": "Hashtags: top 20", "slug": "hashtags-top-20", "query_field": "entities.hashtags.text", "user": ["vagrant"], "created": "2018-03-02T14:42:54.494Z", "modified": "2018-03-05T15:41:48.916Z"}}, {"model": "chirp.aggregationframework", "pk": 18, "fields": {"polymorphic_ctype": ["chirp", "aggregation"], "title": "Users: mentions top 25", "slug": "users-mentions-top-25", "query_field": "entities.user_mentions.screen_name", "user": ["vagrant"], "created": "2018-03-05T15:44:01.825Z", "modified": "2018-03-05T15:59:42.214Z"}}, {"model": "chirp.aggregationframework", "pk": 19, "fields": {"polymorphic_ctype": ["chirp", "aggregation"], "title": "Words: top 50", "slug": "words-top-50", "query_field": "chirp.words", "user": ["vagrant"], "created": "2018-06-11T14:38:02.765Z", "modified": "2018-06-11T14:38:02.765Z"}}, {"model": "chirp.aggregation", "pk": 17, "fields": {"pipeline_js": "[{\"$unwind\":\"$entities.hashtags\"},{\"$project\":{\"hashtag\":{\"$toLower\":\"$entities.hashtags.text\"}}},{\"$group\":{\"_id\":\"$hashtag\",\"value\":{\"$sum\":1}}},{\"$sort\":{\"value\":-1}},{\"$limit\":20}]"}}, {"model": "chirp.aggregation", "pk": 1, "fields": {"pipeline_js": "[{\"$group\":{\"_id\":\"average\",\"value\":{\"$avg\":\"$chirp.sentiment.polarity\"}}}]"}}, {"model": "chirp.aggregation", "pk": 18, "fields": {"pipeline_js": "[{\"$unwind\":\"$entities.user_mentions\"},{\"$group\":{\"_id\":\"$entities.user_mentions.screen_name\",\"value\":{\"$sum\":1}}},{\"$sort\":{\"value\":-1}},{\"$limit\":25}]"}}, {"model": "chirp.aggregation", "pk": 19, "fields": {"pipeline_js": "[{\"$unwind\":\"$chirp.words\"},{\"$project\":{\"word\":{\"$toLower\":\"$chirp.words\"}}},{\"$group\":{\"_id\":\"$word\",\"value\":{\"$sum\":1}}},{\"$sort\":{\"value\":-1}},{\"$limit\":50}]"}}, {"model": "chirp.mapreduce", "pk": 2, "fields": {"mapper_js": "function() {\r\n  emit(this.place.country_code, this.chirp.sentiment.polarity);\r\n}", "reducer_js": "function(key, values) {\r\n  return Array.avg(values);\r\n}", "query_js": "{\"place.country_code\":{\"$exists\":true}}"}}, {"model": "chirp.mapreduce", "pk": 16, "fields": {"mapper_js": "function() {\r\n    var date = new Date(this.created_at);\r\n\r\n    emit(date.toDateString(), this.chirp.sentiment.polarity);\r\n}", "reducer_js": "function(key, values) {\r\n    return Array.avg(values);\r\n}", "query_js": "{\"$and\":[{\"chirp.sentiment\":{\"$exists\":true}},{\"created_at\":{\"$exists\":true}}]}"}}, {"model": "chirp.mapreduce", "pk": 14, "fields": {"mapper_js": "function() {\r\n  emit(this.place.full_name, this.chirp.sentiment.polarity);\r\n}", "reducer_js": "function(key, values) {\r\n  return Array.avg(values);\r\n}", "query_js": "{\"place.full_name\":{\"$exists\":true}}"}}, {"model": "chirp.mapreduce", "pk": 3, "fields": {"mapper_js": "function() {\r\n\temit(this.chirp.sentiment.label, 1);\r\n}", "reducer_js": "function(key, values) {\r\n    return Array.sum(values);\r\n}", "query_js": "{\"chirp.sentiment\":{\"$exists\":true}}"}}, {"model": "chirp.mapreduce", "pk": 4, "fields": {"mapper_js": "function() {\r\n    var date = new Date(this.created_at);\r\n    var label = 'neutral';\r\n\r\n    emit({'value': date.toDateString(), 'id': this.chirp.sentiment.label}, 1);\r\n}", "reducer_js": "function(key, values) {\r\n    return Array.sum(values);\r\n}", "query_js": "{\"$and\":[{\"chirp.sentiment\":{\"$exists\":true}},{\"created_at\":{\"$exists\":true}}]}"}}, {"model": "chirp.mapreduce", "pk": 5, "fields": {"mapper_js": "function() {\r\n  emit(this.place.country_code, 1);\r\n}", "reducer_js": "function(key, values) {\r\n  return Array.sum(values);\r\n}", "query_js": "{\"place.country_code\":{\"$exists\":true}}"}}, {"model": "chirp.mapreduce", "pk": 15, "fields": {"mapper_js": "function() {\r\n  emit(this.place.full_name, 1);\r\n}", "reducer_js": "function(key, values) {\r\n  return Array.sum(values);\r\n}", "query_js": "{\"place.full_name\":{\"$exists\":true}}"}}]
+[
+  {
+    "fields": {
+      "created": "2018-02-21T12:11:24.672Z",
+      "modified": "2018-03-02T13:56:17.787Z",
+      "polymorphic_ctype": [
+        "chirp",
+        "aggregation"
+      ],
+      "query_field": null,
+      "slug": "sentiment-average",
+      "title": "Sentiment: average",
+      "user": [
+        "vagrant"
+      ]
+    },
+    "model": "chirp.aggregationframework",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "created": "2018-02-21T12:11:24.672Z",
+      "modified": "2018-03-02T16:02:41.068Z",
+      "polymorphic_ctype": [
+        "chirp",
+        "mapreduce"
+      ],
+      "query_field": "place.country_code",
+      "slug": "sentiment-by-country",
+      "title": "Sentiment: by country",
+      "user": [
+        "vagrant"
+      ]
+    },
+    "model": "chirp.aggregationframework",
+    "pk": 2
+  },
+  {
+    "fields": {
+      "created": "2018-02-21T12:11:24.672Z",
+      "modified": "2018-03-02T16:03:29.566Z",
+      "polymorphic_ctype": [
+        "chirp",
+        "mapreduce"
+      ],
+      "query_field": "chirp.sentiment.label",
+      "slug": "sentiment-distribution",
+      "title": "Sentiment: distribution",
+      "user": [
+        "vagrant"
+      ]
+    },
+    "model": "chirp.aggregationframework",
+    "pk": 3
+  },
+  {
+    "fields": {
+      "created": "2018-02-21T12:11:24.672Z",
+      "modified": "2018-03-02T13:58:39.606Z",
+      "polymorphic_ctype": [
+        "chirp",
+        "mapreduce"
+      ],
+      "query_field": null,
+      "slug": "sentiment-label-by-date",
+      "title": "Sentiment: label by date",
+      "user": [
+        "vagrant"
+      ]
+    },
+    "model": "chirp.aggregationframework",
+    "pk": 4
+  },
+  {
+    "fields": {
+      "created": "2018-02-21T12:11:24.672Z",
+      "modified": "2018-03-02T13:59:10.536Z",
+      "polymorphic_ctype": [
+        "chirp",
+        "mapreduce"
+      ],
+      "query_field": "place.country_code",
+      "slug": "tweets-by-country",
+      "title": "Tweets: by country",
+      "user": [
+        "vagrant"
+      ]
+    },
+    "model": "chirp.aggregationframework",
+    "pk": 5
+  },
+  {
+    "fields": {
+      "created": "2018-02-27T11:03:51.892Z",
+      "modified": "2018-06-11T14:39:19.361Z",
+      "polymorphic_ctype": [
+        "chirp",
+        "mapreduce"
+      ],
+      "query_field": "place.full_name",
+      "slug": "sentiment-by-place",
+      "title": "Sentiment: by place",
+      "user": [
+        "vagrant"
+      ]
+    },
+    "model": "chirp.aggregationframework",
+    "pk": 14
+  },
+  {
+    "fields": {
+      "created": "2018-02-27T11:06:23.866Z",
+      "modified": "2018-03-02T16:05:08.532Z",
+      "polymorphic_ctype": [
+        "chirp",
+        "mapreduce"
+      ],
+      "query_field": "place.full_name",
+      "slug": "tweets-by-place",
+      "title": "Tweets: by place",
+      "user": [
+        "vagrant"
+      ]
+    },
+    "model": "chirp.aggregationframework",
+    "pk": 15
+  },
+  {
+    "fields": {
+      "created": "2018-03-02T13:30:45.520Z",
+      "modified": "2018-03-02T13:57:49.032Z",
+      "polymorphic_ctype": [
+        "chirp",
+        "mapreduce"
+      ],
+      "query_field": null,
+      "slug": "sentiment-by-date",
+      "title": "Sentiment: by date",
+      "user": [
+        "vagrant"
+      ]
+    },
+    "model": "chirp.aggregationframework",
+    "pk": 16
+  },
+  {
+    "fields": {
+      "created": "2018-03-02T14:42:54.494Z",
+      "modified": "2018-03-05T15:41:48.916Z",
+      "polymorphic_ctype": [
+        "chirp",
+        "aggregation"
+      ],
+      "query_field": "entities.hashtags.text",
+      "slug": "hashtags-top-20",
+      "title": "Hashtags: top 20",
+      "user": [
+        "vagrant"
+      ]
+    },
+    "model": "chirp.aggregationframework",
+    "pk": 17
+  },
+  {
+    "fields": {
+      "created": "2018-03-05T15:44:01.825Z",
+      "modified": "2018-03-05T15:59:42.214Z",
+      "polymorphic_ctype": [
+        "chirp",
+        "aggregation"
+      ],
+      "query_field": "entities.user_mentions.screen_name",
+      "slug": "users-mentions-top-25",
+      "title": "Users: mentions top 25",
+      "user": [
+        "vagrant"
+      ]
+    },
+    "model": "chirp.aggregationframework",
+    "pk": 18
+  },
+  {
+    "fields": {
+      "created": "2018-06-11T14:38:02.765Z",
+      "modified": "2018-06-11T14:38:02.765Z",
+      "polymorphic_ctype": [
+        "chirp",
+        "aggregation"
+      ],
+      "query_field": "chirp.words",
+      "slug": "words-top-50",
+      "title": "Words: top 50",
+      "user": [
+        "vagrant"
+      ]
+    },
+    "model": "chirp.aggregationframework",
+    "pk": 19
+  },
+  {
+    "fields": {
+      "pipeline_js": "[{\"$unwind\":\"$entities.hashtags\"},{\"$project\":{\"hashtag\":{\"$toLower\":\"$entities.hashtags.text\"}}},{\"$group\":{\"_id\":\"$hashtag\",\"value\":{\"$sum\":1}}},{\"$sort\":{\"value\":-1}},{\"$limit\":20}]"
+    },
+    "model": "chirp.aggregation",
+    "pk": 17
+  },
+  {
+    "fields": {
+      "pipeline_js": "[{\"$group\":{\"_id\":\"average\",\"value\":{\"$avg\":\"$chirp.sentiment.polarity\"}}}]"
+    },
+    "model": "chirp.aggregation",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "pipeline_js": "[{\"$unwind\":\"$entities.user_mentions\"},{\"$group\":{\"_id\":\"$entities.user_mentions.screen_name\",\"value\":{\"$sum\":1}}},{\"$sort\":{\"value\":-1}},{\"$limit\":25}]"
+    },
+    "model": "chirp.aggregation",
+    "pk": 18
+  },
+  {
+    "fields": {
+      "pipeline_js": "[{\"$unwind\":\"$chirp.words\"},{\"$project\":{\"word\":{\"$toLower\":\"$chirp.words\"}}},{\"$group\":{\"_id\":\"$word\",\"value\":{\"$sum\":1}}},{\"$sort\":{\"value\":-1}},{\"$limit\":50}]"
+    },
+    "model": "chirp.aggregation",
+    "pk": 19
+  },
+  {
+    "fields": {
+      "mapper_js": "function() {\r\n  emit(this.place.country_code, this.chirp.sentiment.polarity);\r\n}",
+      "query_js": "{\"place.country_code\":{\"$exists\":true}}",
+      "reducer_js": "function(key, values) {\r\n  return Array.avg(values);\r\n}"
+    },
+    "model": "chirp.mapreduce",
+    "pk": 2
+  },
+  {
+    "fields": {
+      "mapper_js": "function() {\r\n    var date = new Date(this.created_at);\r\n\r\n    emit(date.toDateString(), this.chirp.sentiment.polarity);\r\n}",
+      "query_js": "{\"$and\":[{\"chirp.sentiment\":{\"$exists\":true}},{\"created_at\":{\"$exists\":true}}]}",
+      "reducer_js": "function(key, values) {\r\n    return Array.avg(values);\r\n}"
+    },
+    "model": "chirp.mapreduce",
+    "pk": 16
+  },
+  {
+    "fields": {
+      "mapper_js": "function() {\r\n  emit(this.place.full_name, this.chirp.sentiment.polarity);\r\n}",
+      "query_js": "{\"place.full_name\":{\"$exists\":true}}",
+      "reducer_js": "function(key, values) {\r\n  return Array.avg(values);\r\n}"
+    },
+    "model": "chirp.mapreduce",
+    "pk": 14
+  },
+  {
+    "fields": {
+      "mapper_js": "function() {\r\n\temit(this.chirp.sentiment.label, 1);\r\n}",
+      "query_js": "{\"chirp.sentiment\":{\"$exists\":true}}",
+      "reducer_js": "function(key, values) {\r\n    return Array.sum(values);\r\n}"
+    },
+    "model": "chirp.mapreduce",
+    "pk": 3
+  },
+  {
+    "fields": {
+      "mapper_js": "function() {\r\n    var date = new Date(this.created_at);\r\n    var label = 'neutral';\r\n\r\n    emit({'value': date.toDateString(), 'id': this.chirp.sentiment.label}, 1);\r\n}",
+      "query_js": "{\"$and\":[{\"chirp.sentiment\":{\"$exists\":true}},{\"created_at\":{\"$exists\":true}}]}",
+      "reducer_js": "function(key, values) {\r\n    return Array.sum(values);\r\n}"
+    },
+    "model": "chirp.mapreduce",
+    "pk": 4
+  },
+  {
+    "fields": {
+      "mapper_js": "function() {\r\n  emit(this.place.country_code, 1);\r\n}",
+      "query_js": "{\"place.country_code\":{\"$exists\":true}}",
+      "reducer_js": "function(key, values) {\r\n  return Array.sum(values);\r\n}"
+    },
+    "model": "chirp.mapreduce",
+    "pk": 5
+  },
+  {
+    "fields": {
+      "mapper_js": "function() {\r\n  emit(this.place.full_name, 1);\r\n}",
+      "query_js": "{\"place.full_name\":{\"$exists\":true}}",
+      "reducer_js": "function(key, values) {\r\n  return Array.sum(values);\r\n}"
+    },
+    "model": "chirp.mapreduce",
+    "pk": 15
+  }
+]
